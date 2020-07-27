@@ -8,11 +8,13 @@ const router = express.Router();
 
 // 홈페이지를 열어준다 - ejs 버전
 router.get('/', function(req, res, next){
-  res.render('video_record', {
-    title: 'express',
-    length: 5,
-    value: 5
-  });
+  // 로그인 안 되어있을 경우, 다시 메인 화면으로 돌아간다
+  if(req.cookies.user==null){
+    res.redirect('../../')
+  }
+  
+  console.log("되나? : " + req.cookies.user)
+  res.render('video_record');
 })
 
 /* DB에 접근해야 하는 호출들 */
@@ -21,6 +23,11 @@ var mongoose = require('mongoose');
 
 // 시간 누적 기능
 router.post('/add_weekly', (req, res)=>{
+  // 로그인 안 되어있을 경우, 다시 메인 화면으로 돌아간다
+  if(req.cookies.user==null){
+    res.redirect('../../')
+  }
+
     if (req.body.my_email === "") {
         return res.status(400).json({
           error: "EMPTY EMAIL",
@@ -33,7 +40,7 @@ router.post('/add_weekly', (req, res)=>{
         error: "EMPTY CURRENT TIME",
         code: 2
       });   
-    }
+    }  
 
     let given_time = req.body.current_time;
     WeekTime.findOne({"my_email": req.body.my_email}, function(err, weekTime){

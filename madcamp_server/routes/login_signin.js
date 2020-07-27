@@ -6,8 +6,17 @@ var path = require('path');
 var express = require('express');
 const router = express.Router();
 
+// cookie parser를 사용하기 위함
+var cookieParser = require('cookie-parser')
+router.use(cookieParser())
+
 // 로그인 홈페이지를 열어준다 - ejs 버전
 router.get('/page_login', function(req, res, next){
+  // 로그인 되어있을 경우, 다시 메인 화면으로 돌아간다
+  if(req.cookies.user!=null){
+    res.redirect('../../')
+  }  
+
   res.render('page_login', { 
 		title: 'Express',
 		length : 5});
@@ -15,9 +24,20 @@ router.get('/page_login', function(req, res, next){
 
 // 회원가입 홈페이지를 열어준다 - ejs 버전
 router.get('/page_signin', function(req, res, next){
+  // 로그인 되어있을 경우, 다시 메인 화면으로 돌아간다
+  if(req.cookies.user!=null){
+    res.redirect('../../')
+  }
+    
   res.render('page_signin', { 
 		title: 'Express',
 		length : 5});
+})
+
+// 로그 아웃 기능
+router.get('/logout', (req, res)=>{
+  res.clearCookie("user")
+  res.redirect('../../../')
 })
 
 /* DB에 접근해야 하는 호출들 */
@@ -43,13 +63,18 @@ router.post('/login', (req, res)=>{
     console.log("email: " + req.body.my_email + " pwd : " + req.body.my_pwd + "  total : " + req.body);
     UserInfo.findOne({"my_email": req.body.my_email, "my_pwd": req.body.my_pwd}, function(err, userInfo){
         if(err){
-             return res.status(500).json({error: 'Internal Error'});
+          return res.status(500).json({error: 'Internal Error'});
         }
         if(userInfo == null){
-            return res.status(404).json({error:'Wrong Email and Password'});
-        }
-        res.render()
-        return res.status(200).json(req.body.my_email);
+          console.log(userInfo + " 1");
+          return res.status(404).json({error:'Wrong Email and Password'});
+        }else{
+          console.log(userInfo + " 2");
+          res.cookie("user", req.body.my_email, {
+            expire : new Date(Date.now()+9000000)
+          })
+          return res.redirect("../../../")        
+        }        
      });
 });
 
@@ -93,9 +118,15 @@ router.post('/signin', (req, res)=>{
           my_goal: req.body.my_goal    
         });
         
+        // 쿠키 값을 저장해준다
+        res.cookie("user", req.body.my_email, {
+          expire : new Date(Date.now()+9000000)
+        })
+
         // 저장해준다
         tmp_userInfo.save(err => {
           if (err) throw err;
+          
           return res.json(req.body.my_email);
         });
       }
