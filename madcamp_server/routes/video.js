@@ -8,7 +8,11 @@ const router = express.Router();
 
 // 홈페이지를 열어준다 - ejs 버전
 router.get('/', function(req, res, next){
-  res.render('video_record');
+  res.render('video_record', {
+    title: 'express',
+    length: 5,
+    value: 5
+  });
 })
 
 /* DB에 접근해야 하는 호출들 */

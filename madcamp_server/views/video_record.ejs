@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <base href="/">
 
         <!-- local에서 로딩한 bootstrap -->
         <!-- <link rel="stylesheet" href="css/bootstrap.min.css" />
@@ -85,8 +86,10 @@
                 // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
             
                 // the link to your model provided by Teachable Machine export panel
-                const URL = "./my_model/";
-            
+                console.log("here!");
+                const URL = "../my_model/";
+                //const URL = "C:\Users\Hyunho Lee\Desktop\madcamp_week3\madcamp_server\views\my_model";
+
                 let model, webcam, labelContainer, maxPredictions;
                 let total_studied = 0, prev_time, offset_time = 0;
 
@@ -134,21 +137,25 @@
                     var cur_t = new Date();            
                     var diff_t = cur_t.getTime() - prev_time.getTime();
                     prev_time = cur_t;
-                    
-                    if(prediction[0].className == "studying" && 0.9 < prediction[0].probability.toFixed(2)){                
-                        total_studied = total_studied + diff_t;
-                        console.log(total_studied);
-
-                        var format_t = new Date(total_studied - 32400000);
-
-                        labelContainer.childNodes[0].innerHTML = "공부 잘 하고 있네  H:" + cur_t.getHours() + "M: "+cur_t.getMinutes() + "S:" + cur_t.getSeconds();
-                        // labelContainer.childNodes[1].innerHTML = "누적 공부시간 : " + total_studied.toString();
-                        labelContainer.childNodes[1].innerHTML = "누적 공부시간 : " + format_t.getHours() + "시간  " + format_t.getMinutes() + "분  " + format_t.getSeconds() + "초";
-                    }else if(prediction[1].className == "playing" && 0.9 < prediction[0].probability.toFixed(2)){
-                        labelContainer.childNodes[0].innerHTML = "공부 안하네? 용돈 깎는다 ^^ H: "  + cur_t.getHours() + "시간  "+cur_t.getMinutes() + "분 " + cur_t.getSeconds() + "초  ";
-                    }else{
-                        labelContainer.childNodes[0].innerHTML = "뭐하는지 모르겠네 우리 아들? ^^ CCTV 돌려본다?? ㅎㅎ H: "  + cur_t.getHours() + "시간  "+cur_t.getMinutes() + "분  " + cur_t.getSeconds() + "초";
+                    for (let i = 0; i < maxPredictions; i++) {
+                        const classPrediction =
+                            prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                        labelContainer.childNodes[i].innerHTML = classPrediction;
                     }
+                    // if(prediction[0].className == "studying" && 0.9 < prediction[0].probability.toFixed(2)){                
+                    //     total_studied = total_studied + diff_t;
+                    //     console.log(total_studied);
+
+                    //     var format_t = new Date(total_studied - 32400000);
+
+                    //     labelContainer.childNodes[0].innerHTML = "공부 잘 하고 있네  H:" + cur_t.getHours() + "M: "+cur_t.getMinutes() + "S:" + cur_t.getSeconds();
+                    //     // labelContainer.childNodes[1].innerHTML = "누적 공부시간 : " + total_studied.toString();
+                    //     labelContainer.childNodes[1].innerHTML = "누적 공부시간 : " + format_t.getHours() + "시간  " + format_t.getMinutes() + "분  " + format_t.getSeconds() + "초";
+                    // }else if(prediction[1].className == "playing" && 0.9 < prediction[0].probability.toFixed(2)){
+                    //     labelContainer.childNodes[0].innerHTML = "공부 안하네? 용돈 깎는다 ^^ H: "  + cur_t.getHours() + "시간  "+cur_t.getMinutes() + "분 " + cur_t.getSeconds() + "초  ";
+                    // }else{
+                    //     labelContainer.childNodes[0].innerHTML = "뭐하는지 모르겠네 우리 아들? ^^ CCTV 돌려본다?? ㅎㅎ H: "  + cur_t.getHours() + "시간  "+cur_t.getMinutes() + "분  " + cur_t.getSeconds() + "초";
+                    // }
                 }
             </script>
             <script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
