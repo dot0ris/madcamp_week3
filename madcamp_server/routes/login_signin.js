@@ -63,11 +63,15 @@ router.post('/login', (req, res)=>{
     console.log("email: " + req.body.my_email + " pwd : " + req.body.my_pwd + "  total : " + req.body);
     UserInfo.findOne({"my_email": req.body.my_email, "my_pwd": req.body.my_pwd}, function(err, userInfo){
         if(err){
-          return res.status(500).json({error: 'Internal Error'});
+          alert("Internal Error");
+          return res.status(500).redirect("/api/login_signin/page_login");
+          //return res.status(500).json({error: 'Internal Error'});
         }
         if(userInfo == null){
           console.log(userInfo + " 1");
           return res.status(404).json({error:'Wrong Email and Password'});
+          //alert("Wrong password");
+          //return res.status(404).redirect("/api/login_signin/page_login");
         }else{
           console.log(userInfo + " 2");
           res.cookie("user", req.body.my_email, {
